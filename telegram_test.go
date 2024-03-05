@@ -1,8 +1,7 @@
-package client
+package teledau
 
 import (
 	"context"
-	"cwntelegram/internal/models"
 	"encoding/base64"
 	"io/ioutil"
 	"testing"
@@ -22,7 +21,7 @@ func TestTelegramClient_SendMessage(t *testing.T) {
 	if telegramClient == nil {
 		t.Error("Telegram client is nil")
 	}
-	_, err := telegramClient.SendMessage(models.MessageRequest{
+	_, err := telegramClient.SendMessage(MessageRequest{
 		ChatId:    75504797,
 		Text:      "_Test message_",
 		ParseMode: "MarkdownV2",
@@ -30,7 +29,7 @@ func TestTelegramClient_SendMessage(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = telegramClient.SendMessage(models.MessageRequest{
+	_, err = telegramClient.SendMessage(MessageRequest{
 		ChatId:    75504797,
 		Text:      "<b>Test message</b>",
 		ParseMode: "HTML",
@@ -39,11 +38,11 @@ func TestTelegramClient_SendMessage(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, err = telegramClient.SendMessage(models.MessageRequest{
+	_, err = telegramClient.SendMessage(MessageRequest{
 		ChatId: 75504797,
 		Text:   "Test message",
-		ReplyMarkup: models.InlineKeyboardMarkup{
-			InlineKeyboard: [][]models.InlineKeyboardButton{
+		ReplyMarkup: InlineKeyboardMarkup{
+			InlineKeyboard: [][]InlineKeyboardButton{
 				{
 					{Text: "Option 1", CallbackData: "option1"},
 					{Text: "Option 2", CallbackData: "option2"},
@@ -54,11 +53,11 @@ func TestTelegramClient_SendMessage(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = telegramClient.SendMessage(models.MessageRequest{
+	_, err = telegramClient.SendMessage(MessageRequest{
 		ChatId: 75504797,
 		Text:   "Test message",
-		ReplyMarkup: models.ReplyKeyboardMarkup{
-			Keyboard: [][]models.KeyboardButton{
+		ReplyMarkup: ReplyKeyboardMarkup{
+			Keyboard: [][]KeyboardButton{
 				{
 					{Text: "Option 1"},
 				},
