@@ -1,0 +1,331 @@
+package models
+
+type Channel struct {
+	Id       int
+	ChatID   string
+	Username string
+}
+
+/*
+	{
+	    "chat_id": "@qazaqibol",
+	    "question": "What is the capital of France?",
+	    "options": ["Paris", "Berlin", "London", "Rome"],
+	    "is_anonymous": true,
+	    "type": "quiz",
+	    "correct_option_id": 0,
+	    "explanation": "Paris is the capital of France.",
+	    "open_period": 3600}
+*/
+type PollRequest struct {
+	ChatId          string   `json:"chat_id"`
+	Question        string   `json:"question"`
+	Options         []string `json:"options"`
+	IsAnonymous     bool     `json:"is_anonymous"`
+	Type            string   `json:"type"`
+	CorrectOptionId int      `json:"correct_option_id"`
+	Explanation     string   `json:"explanation"`
+	OpenPeriod      int      `json:"open_period"`
+	CloseDate       int      `json:"close_date"`
+}
+
+/*
+	{
+	    "ok": true,
+	    "result": {
+	        "message_id": 9,
+	        "sender_chat": {
+	            "id": -1002126114089,
+	            "title": "Qazaqiya",
+	            "username": "qazaqibol",
+	            "type": "channel"
+	        },
+	        "chat": {
+	            "id": -1002126114089,
+	            "title": "Qazaqiya",
+	            "username": "qazaqibol",
+	            "type": "channel"
+	        },
+	        "date": 1703821575,
+	        "poll": {
+	            "id": "5220079663598012551",
+	            "question": "What is the capital of France?",
+	            "options": [
+	                {
+	                    "text": "Paris",
+	                    "voter_count": 0
+	                },
+	                {
+	                    "text": "Berlin",
+	                    "voter_count": 0
+	                },
+	                {
+	                    "text": "London",
+	                    "voter_count": 0
+	                },
+	                {
+	                    "text": "Rome",
+	                    "voter_count": 0
+	                }
+	            ],
+	            "total_voter_count": 0,
+	            "open_period": 600,
+	            "close_date": 1703822175,
+	            "is_closed": false,
+	            "is_anonymous": true,
+	            "type": "quiz",
+	            "allows_multiple_answers": false,
+	            "correct_option_id": 0,
+	            "explanation": "Paris is the capital of France.",
+	            "explanation_entities": []
+	        }
+	    }
+	}
+*/
+type StikerResponse struct {
+	Ok     bool `json:"ok"`
+	Result struct {
+		MessageId  int64 `json:"message_id"`
+		SenderChat struct {
+			Id       int64  `json:"id"`
+			Title    string `json:"title"`
+			Username string `json:"username"`
+			Type     string `json:"type"`
+		} `json:"sender_chat"`
+		Chat struct {
+			Id       int64  `json:"id"`
+			Title    string `json:"title"`
+			Username string `json:"username"`
+			Type     string `json:"type"`
+		} `json:"chat"`
+		Date    int `json:"date"`
+		Sticker struct {
+			Width      int    `json:"width"`
+			Height     int    `json:"height"`
+			IsAnimated bool   `json:"is_animated"`
+			IsVideo    bool   `json:"is_video"`
+			Type       string `json:"type"`
+			Thumbnail  struct {
+				FileId       string `json:"file_id"`
+				FileUniqueId string `json:"file_unique_id"`
+				FileSize     int    `json:"file_size"`
+				Width        int    `json:"width"`
+				Height       int    `json:"height"`
+			} `json:"thumbnail"`
+			Thumb struct {
+				FileId       string `json:"file_id"`
+				FileUniqueId string `json:"file_unique_id"`
+				FileSize     int    `json:"file_size"`
+				Width        int    `json:"width"`
+				Height       int    `json:"height"`
+			} `json:"thumb"`
+			FileId       string `json:"file_id"`
+			FileUniqueId string `json:"file_unique_id"`
+			FileSize     int    `json:"file_size"`
+		} `json:"sticker"`
+	} `json:"result"`
+}
+
+type PostResponse struct {
+	Ok     bool `json:"ok"`
+	Result struct {
+		Chat struct {
+			Id       int64  `json:"id"`
+			Title    string `json:"title"`
+			Type     string `json:"type"`
+			Username string `json:"username"`
+		} `json:"chat"`
+		Date     int64 `json:"date"`
+		Entities []struct {
+			Length int    `json:"length"`
+			Offset int    `json:"offset"`
+			Type   string `json:"type"`
+		} `json:"entities"`
+		MessageId  int64 `json:"message_id"`
+		SenderChat struct {
+			Id       int64  `json:"id"`
+			Title    string `json:"title"`
+			Type     string `json:"type"`
+			Username string `json:"username"`
+		} `json:"sender_chat"`
+		Text string `json:"text"`
+	} `json:"result"`
+}
+
+type MediaPostResponse struct {
+	Ok     bool `json:"ok"`
+	Result []struct {
+		Chat struct {
+			Id       int64  `json:"id"`
+			Title    string `json:"title"`
+			Type     string `json:"type"`
+			Username string `json:"username"`
+		} `json:"chat"`
+		Date     int64 `json:"date"`
+		Entities []struct {
+			Length int    `json:"length"`
+			Offset int    `json:"offset"`
+			Type   string `json:"type"`
+		} `json:"entities"`
+		MessageId  int64 `json:"message_id"`
+		SenderChat struct {
+			Id       int64  `json:"id"`
+			Title    string `json:"title"`
+			Type     string `json:"type"`
+			Username string `json:"username"`
+		} `json:"sender_chat"`
+		Text string `json:"text"`
+	} `json:"result"`
+}
+
+type PollResponse struct {
+	Ok     bool `json:"ok"`
+	Result struct {
+		MessageId  int `json:"message_id"`
+		SenderChat struct {
+			Id       int64  `json:"id"`
+			Title    string `json:"title"`
+			Username string `json:"username"`
+			Type     string `json:"type"`
+		} `json:"sender_chat"`
+		Chat struct {
+			Id       int64  `json:"id"`
+			Title    string `json:"title"`
+			Username string `json:"username"`
+			Type     string `json:"type"`
+		} `json:"chat"`
+		Date int `json:"date"`
+		Poll struct {
+			Id       string `json:"id"`
+			Question string `json:"question"`
+			Options  []struct {
+				Text       string `json:"text"`
+				VoterCount int    `json:"voter_count"`
+			} `json:"options"`
+			TotalVoterCount       int           `json:"total_voter_count"`
+			OpenPeriod            int           `json:"open_period"`
+			CloseDate             int           `json:"close_date"`
+			IsClosed              bool          `json:"is_closed"`
+			IsAnonymous           bool          `json:"is_anonymous"`
+			Type                  string        `json:"type"`
+			AllowsMultipleAnswers bool          `json:"allows_multiple_answers"`
+			CorrectOptionId       int           `json:"correct_option_id"`
+			Explanation           string        `json:"explanation"`
+			ExplanationEntities   []interface{} `json:"explanation_entities"`
+		} `json:"poll"`
+	} `json:"result"`
+}
+
+/*
+	{
+	    "chat_id": "@qazaqibol",
+	    "message_id": 10
+	}
+*/
+type MessageId struct {
+	ChatId    string `json:"chat_id"`
+	MessageId int    `json:"message_id"`
+}
+
+type Post struct {
+	ChatId     string   `json:"chat_id"`
+	Caption    string   `json:"caption"`
+	Photo      []string `json:"photo"` //base64
+	IsMarkdown bool     `json:"is_markdown"`
+}
+
+type MediaGroup struct {
+	Type      string `json:"type"`
+	Media     string `json:"media"`
+	Caption   string `json:"caption,omitempty"`
+	ParseMode string `json:"parse_mode,omitempty"`
+}
+
+type PostRequest struct {
+	Id               int64    `json:"id"`
+	Title            string   `json:"title"`
+	ChannelId        int      `json:"channel_id"`
+	ChatUsername     string   `json:"chat_id"`
+	Text             string   `json:"text"`
+	Img              []string `json:"img"`
+	ParseMode        string   `json:"parse_mode"`
+	PostType         int64    `json:"post_type"`
+	MessageId        int64    `json:"message_id"`
+	Status           int64    `json:"status"`
+	PostedAt         string   `json:"posted_at"`
+	ReplyToMessageId int64    `json:"reply_to_message_id"`
+}
+
+type Update struct {
+	UpdateId   int         `json:"update_id"`
+	ChatMember *ChatMember `json:"chat_member,omitempty"`
+	Message    *Message    `json:"message,omitempty"`
+}
+
+type Message struct {
+	MessageId int `json:"message_id"`
+	From      struct {
+		Id           int    `json:"id"`
+		IsBot        bool   `json:"is_bot"`
+		FirstName    string `json:"first_name"`
+		Username     string `json:"username"`
+		LanguageCode string `json:"language_code"`
+	} `json:"from"`
+	Chat struct {
+		Id        int64  `json:"id"`
+		FirstName string `json:"first_name"`
+		Username  string `json:"username"`
+		Type      string `json:"type"`
+	} `json:"chat"`
+	Date int    `json:"date"`
+	Text string `json:"text"`
+}
+
+type ChatMember struct {
+	Chat struct {
+		Id       int64  `json:"id"`
+		Title    string `json:"title"`
+		Username string `json:"username"`
+		Type     string `json:"type"`
+	} `json:"chat"`
+	From struct {
+		Id        int64  `json:"id"`
+		IsBot     bool   `json:"is_bot"`
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name,omitempty"`
+		Username  string `json:"username"`
+	} `json:"from"`
+	Date          int `json:"date"`
+	OldChatMember struct {
+		User struct {
+			Id        int64  `json:"id"`
+			IsBot     bool   `json:"is_bot"`
+			FirstName string `json:"first_name"`
+			LastName  string `json:"last_name,omitempty"`
+			Username  string `json:"username"`
+		} `json:"user"`
+		Status string `json:"status"`
+	} `json:"old_chat_member"`
+	NewChatMember struct {
+		User struct {
+			Id        int64  `json:"id"`
+			IsBot     bool   `json:"is_bot"`
+			FirstName string `json:"first_name"`
+			LastName  string `json:"last_name,omitempty"`
+			Username  string `json:"username"`
+		} `json:"user"`
+		Status string `json:"status"`
+	} `json:"new_chat_member"`
+	InviteLink struct {
+		InviteLink string `json:"invite_link"`
+		Creator    struct {
+			Id        int64  `json:"id"`
+			IsBot     bool   `json:"is_bot"`
+			FirstName string `json:"first_name"`
+			Username  string `json:"username"`
+		} `json:"creator"`
+		CreatesJoinRequest bool `json:"creates_join_request"`
+		IsPrimary          bool `json:"is_primary"`
+		IsRevoked          bool `json:"is_revoked"`
+	} `json:"invite_link,omitempty"`
+}
