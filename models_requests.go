@@ -13,9 +13,14 @@ type InlineKeyboardMarkup struct {
 }
 
 type InlineKeyboardButton struct {
-	Text         string `json:"text"`
-	URL          string `json:"url,omitempty"`
-	CallbackData string `json:"callback_data,omitempty"`
+	Text         string     `json:"text"`
+	URL          string     `json:"url,omitempty"`
+	CallbackData string     `json:"callback_data,omitempty"`
+	WebApp       WebAppInfo `json:"web_app,omitempty"`
+}
+
+type WebAppInfo struct {
+	URL string `json:"url"`
 }
 
 type KeyboardButton struct {
