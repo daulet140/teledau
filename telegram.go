@@ -53,44 +53,44 @@ func NewTelegramClient(botToken string, ctx context.Context) *TelegramClient {
 	}
 }
 
-func (t *TelegramClient) SendMessage(message MessageRequest) (Message, error) {
+func (t *TelegramClient) SendMessage(message MessageRequest) (SendMessageResponse, error) {
 	url := "https://api.telegram.org/bot" + t.BotToken + "/sendMessage"
 
 	messageData, err := json.Marshal(message)
 	if err != nil {
 		log.Printf("Error marshalling message: %v", err)
-		return Message{}, err
+		return SendMessageResponse{}, err
 	}
 
 	req, err := http.NewRequestWithContext(t.Ctx, http.MethodPost, url, bytes.NewBuffer(messageData))
 	if err != nil {
 		log.Printf("Error creating request: %v", err)
-		return Message{}, err
+		return SendMessageResponse{}, err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := t.HttpClient.Do(req)
 	if err != nil {
 		log.Printf("Error sending request: %v", err)
-		return Message{}, err
+		return SendMessageResponse{}, err
 	}
 
 	defer resp.Body.Close()
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Printf("Error reading response body: %v", err)
-		return Message{}, err
+		return SendMessageResponse{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		log.Printf("API request failed with status code: %d body %v", resp.StatusCode, string(bodyBytes))
-		return Message{}, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
+		return SendMessageResponse{}, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
 	}
 
-	var createdApplicant Message
+	var createdApplicant SendMessageResponse
 	if err := json.Unmarshal(bodyBytes, &createdApplicant); err != nil {
 		log.Printf("Error unmarshalling response body: %v", err)
-		return Message{}, err
+		return SendMessageResponse{}, err
 	}
 
 	return createdApplicant, nil
