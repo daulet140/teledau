@@ -250,3 +250,24 @@ func (t *TelegramClient) GenerateInviteLinks(invite CreateChatInviteLinkRequest)
 
 	return inviteLinks, nil
 }
+
+func (t *TelegramClient) DeleteMessage(messageId int, chatId int64) error {
+
+	url := "https://api.telegram.org/bot" + t.BotToken + "/deleteMessage"
+	requestBody, err := json.Marshal(map[string]string{
+		"chat_id":    fmt.Sprintf("%d", chatId),
+		"message_id": fmt.Sprintf("%d", messageId),
+	})
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return nil
+
+}
