@@ -230,8 +230,15 @@ type Message struct {
 	Date           int             `json:"date"`
 	Text           string          `json:"text"`
 	ReplyToMessage *ReplyToMessage `json:"reply_to_message,omitempty"`
+	Photo          []Photo         `json:"photo"`
 }
-
+type Photo struct {
+	FileId       string `json:"file_id"`
+	FileUniqueId string `json:"file_unique_id"`
+	FileSize     int    `json:"file_size"`
+	Width        int    `json:"width"`
+	Height       int    `json:"height"`
+}
 type ReplyToMessage struct {
 	MessageId int `json:"message_id"`
 	From      struct {
