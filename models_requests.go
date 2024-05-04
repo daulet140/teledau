@@ -6,6 +6,7 @@ type MessageRequest struct {
 	ParseMode             string      `json:"parse_mode,omitempty"`
 	DisableWebPagePreview bool        `json:"disable_web_page_preview,omitempty"`
 	ReplyMarkup           interface{} `json:"reply_markup,omitempty"`
+	Photo                 []Photo     `json:"photo,omitempty"`
 }
 
 type InlineKeyboardMarkup struct {
