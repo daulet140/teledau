@@ -271,3 +271,25 @@ func (t *TelegramClient) DeleteMessage(messageId int, chatId int64) error {
 	return nil
 
 }
+
+func (t *TelegramClient) ForwardMessage(chatId string, fromChatId string, messageId string) error {
+
+	url := "https://api.telegram.org/bot" + t.BotToken + "/forwardMessage"
+
+	requestBody, err := json.Marshal(map[string]string{
+		"chat_id":      chatId,
+		"from_chat_id": fromChatId,
+		"message_id":   messageId,
+	})
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return nil
+}
