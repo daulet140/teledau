@@ -144,33 +144,80 @@ func (t *TelegramClient) SendPoll(poolRequest PollRequest) (PollResponse, error)
 	return pollResponse, nil
 }
 
-func (t *TelegramClient) SendMedia(chatId string, media string) error {
-	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendPhoto", t.BotToken)
-
-	// Create the JSON payload
-	payload := struct {
-		ChatID string `json:"chat_id"`
-		Photo  string `json:"photo"`
-	}{
-		ChatID: chatId,
-		Photo:  "base64:" + media,
-	}
-
-	// Marshal the payload into JSON
-	body, err := json.Marshal(payload)
+func (t *TelegramClient) SendMedia(chatId string, media, message string) error {
+	imgData, err := base64.StdEncoding.DecodeString(media)
 	if err != nil {
+		fmt.Println("Error decoding base64 string:", err)
+		return err
+	}
+	tempFile, err := ioutil.TempFile("", "image*.jpeg")
+	if err != nil {
+		fmt.Println("Error creating temporary file:", err)
+		return err
+	}
+	defer os.Remove(tempFile.Name()) // Clean up temporary file
+
+	if _, err := tempFile.Write(imgData); err != nil {
+		fmt.Println("Error writing image data to file:", err)
 		return err
 	}
 
-	// Send the HTTP request
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(body))
+	if err := tempFile.Close(); err != nil {
+		fmt.Println("Error closing temporary file:", err)
+		return err
+	}
+
+	// Open the temporary file
+	file, err := os.Open(tempFile.Name())
 	if err != nil {
+		fmt.Println("Error opening temporary file:", err)
+		return err
+	}
+	defer file.Close()
+
+	// Create a new HTTP request with the file
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.telegram.org/bot%s/sendPhoto?chat_id=%s", t.BotToken, chatId), nil)
+	if err != nil {
+		fmt.Println("Error creating HTTP request:", err)
+		return err
+	}
+
+	// Create a new form file field
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("photo", "image.jpeg")
+	if err != nil {
+		fmt.Println("Error creating form file:", err)
+		return err
+	}
+
+	// Copy the file data to the form file field
+	if _, err := io.Copy(part, file); err != nil {
+		fmt.Println("Error copying file data:", err)
+		return err
+	}
+
+	// Add the caption field
+	writer.WriteField("caption", "text")
+
+	// Close the multipart writer
+	writer.Close()
+
+	// Set the request body
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Body = ioutil.NopCloser(body)
+
+	// Send the HTTP request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending HTTP request:", err)
 		return err
 	}
 	defer resp.Body.Close()
 
+	fmt.Println("Photo sent successfully.")
 	return nil
-
 }
 
 func (t *TelegramClient) SendSticker(chatId string, media string) (StikerResponse, error) {
