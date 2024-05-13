@@ -198,7 +198,7 @@ func (t *TelegramClient) SendMedia(chatId string, media, message string) error {
 	}
 
 	// Add the caption field
-	writer.WriteField("caption", "text")
+	writer.WriteField("caption", message)
 
 	// Close the multipart writer
 	writer.Close()
