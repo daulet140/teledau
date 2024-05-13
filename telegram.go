@@ -215,7 +215,12 @@ func (t *TelegramClient) SendMedia(chatId string, media, message string) error {
 		return err
 	}
 	defer resp.Body.Close()
-
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading response body: %v", err)
+		return err
+	}
+	log.Printf("%s", bodyBytes)
 	fmt.Println("Photo sent successfully.")
 	return nil
 }
