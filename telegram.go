@@ -8,9 +8,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"path/filepath"
 	"time"
 )
@@ -28,6 +30,9 @@ type Telegram interface {
 	SendSticker(chatId int64, media string) (StikerResponse, error)
 
 	GenerateInviteLinks(invite CreateChatInviteLinkRequest) ([]string, error)
+	DownloadAndEncodeFile(filePath string) (string, error)
+	DownloadFile(fileName, filePath string) error
+	FetFilePath(fileID string) (string, error)
 }
 
 type TelegramClient struct {
@@ -139,7 +144,32 @@ func (t *TelegramClient) SendPoll(poolRequest PollRequest) (PollResponse, error)
 	return pollResponse, nil
 }
 
-func (t *TelegramClient) SendMedia(chatId string, media string) {
+func (t *TelegramClient) SendMedia(chatId string, media string) error {
+	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendPhoto", t.BotToken)
+
+	// Create the JSON payload
+	payload := struct {
+		ChatID string `json:"chat_id"`
+		Photo  string `json:"photo"`
+	}{
+		ChatID: chatId,
+		Photo:  "base64:" + media,
+	}
+
+	// Marshal the payload into JSON
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	// Send the HTTP request
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return nil
 
 }
 
@@ -296,4 +326,68 @@ func (t *TelegramClient) ForwardMessage(chatId string, fromChatId string, messag
 	}
 
 	return bodyBytes, nil
+}
+
+func (t *TelegramClient) DownloadAndEncodeFile(filePath string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", t.BotToken, filePath))
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	fileBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	// Encode file bytes as base64
+	base64String := base64.StdEncoding.EncodeToString(fileBytes)
+
+	return base64String, nil
+}
+
+func (t *TelegramClient) DownloadFile(fileName, filePath string) error {
+	resp, err := http.Get(fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", t.BotToken, fileName))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	out, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *TelegramClient) FetFilePath(fileID string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/getFile?file_id=%s", t.BotToken, fileID))
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var fileResponse struct {
+		Result struct {
+			FilePath string `json:"file_path"`
+		} `json:"result"`
+	}
+	err = json.Unmarshal(body, &fileResponse)
+	if err != nil {
+		return "", err
+	}
+
+	return fileResponse.Result.FilePath, nil
 }
