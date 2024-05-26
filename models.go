@@ -268,7 +268,7 @@ type ChatMember struct {
 	From struct {
 		Id        int64  `json:"id"`
 		IsBot     bool   `json:"is_bot"`
-		FirstName string `json:"first_name"`
+		FirstName string `json:"first_name,"`
 		LastName  string `json:"last_name,omitempty"`
 		Username  string `json:"username"`
 	} `json:"from"`
@@ -295,6 +295,7 @@ type ChatMember struct {
 	} `json:"new_chat_member"`
 	InviteLink struct {
 		InviteLink string `json:"invite_link"`
+		Name       string `json:"name"`
 		Creator    struct {
 			Id        int64  `json:"id"`
 			IsBot     bool   `json:"is_bot"`
