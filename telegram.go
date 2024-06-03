@@ -18,15 +18,15 @@ import (
 )
 
 type Telegram interface {
-	SendMessage(message MessageRequest) (SendMessageResponse, error)
 	SendPoll(poolRequest PollRequest) (PollResponse, error)
 	SendMedia(chatId string, media, message string) error
 	SendSticker(chatId string, media string) (StikerResponse, error)
-	GenerateInviteLinks(invite CreateChatInviteLinkRequest) (*InviteLinks, error)
+	SendMessage(message MessageRequest) (SendMessageResponse, error)
 	GetFilePath(fileID string) (string, error)
-	DownloadStrBase64(filePath string) (string, error)
 	DownloadByte(filePath string) ([]byte, error)
 	DownloadFile(fileName, filePath string) error
+	DownloadStrBase64(filePath string) (string, error)
+	GenerateInviteLinks(invite CreateChatInviteLinkRequest) (*InviteLinks, error)
 }
 
 type TelegramClient struct {
