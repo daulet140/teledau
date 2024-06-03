@@ -18,21 +18,15 @@ import (
 )
 
 type Telegram interface {
-	SendMessage(message MessageRequest) (Message, error)
-	//SendMessageWithImg(chatId string, message models.MessageRequest, img []string)
-
-	//SendPost(chatId string, title string, text string, img []string)
-
+	SendMessage(message MessageRequest) (SendMessageResponse, error)
 	SendPoll(poolRequest PollRequest) (PollResponse, error)
-
-	SendMedia(chatId string, media string)
-
-	SendSticker(chatId int64, media string) (StikerResponse, error)
-
-	GenerateInviteLinks(invite CreateChatInviteLinkRequest) ([]string, error)
-	DownloadAndEncodeFile(filePath string) (string, error)
+	SendMedia(chatId string, media, message string) error
+	SendSticker(chatId string, media string) (StikerResponse, error)
+	GenerateInviteLinks(invite CreateChatInviteLinkRequest) (*InviteLinks, error)
+	GetFilePath(fileID string) (string, error)
+	DownloadStrBase64(filePath string) (string, error)
+	DownloadByte(filePath string) ([]byte, error)
 	DownloadFile(fileName, filePath string) error
-	FetFilePath(fileID string) (string, error)
 }
 
 type TelegramClient struct {
@@ -380,22 +374,29 @@ func (t *TelegramClient) ForwardMessage(chatId string, fromChatId string, messag
 	return bodyBytes, nil
 }
 
-func (t *TelegramClient) DownloadAndEncodeFile(filePath string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", t.BotToken, filePath))
+func (t *TelegramClient) DownloadStrBase64(filePath string) (string, error) {
+	// Encode file bytes as base64
+	fileBytes, err := t.DownloadByte(filePath)
 	if err != nil {
 		return "", err
+	}
+	base64String := base64.StdEncoding.EncodeToString(fileBytes)
+
+	return base64String, nil
+}
+func (t *TelegramClient) DownloadByte(filePath string) ([]byte, error) {
+	resp, err := http.Get(fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", t.BotToken, filePath))
+	if err != nil {
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	fileBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	// Encode file bytes as base64
-	base64String := base64.StdEncoding.EncodeToString(fileBytes)
-
-	return base64String, nil
+	return fileBytes, nil
 }
 
 func (t *TelegramClient) DownloadFile(fileName, filePath string) error {
@@ -419,7 +420,7 @@ func (t *TelegramClient) DownloadFile(fileName, filePath string) error {
 	return nil
 }
 
-func (t *TelegramClient) FetFilePath(fileID string) (string, error) {
+func (t *TelegramClient) GetFilePath(fileID string) (string, error) {
 	resp, err := http.Get(fmt.Sprintf("https://api.telegram.org/bot%s/getFile?file_id=%s", t.BotToken, fileID))
 	if err != nil {
 		return "", err
