@@ -191,6 +191,7 @@ type Update struct {
 	ChatMember *ChatMember `json:"chat_member,omitempty"`
 	Message    *Message    `json:"message,omitempty"`
 }
+
 type SendMessageResponse struct {
 	Ok     bool `json:"ok"`
 	Result struct {
@@ -201,17 +202,20 @@ type SendMessageResponse struct {
 			FirstName string `json:"first_name"`
 			Username  string `json:"username"`
 		} `json:"from"`
-		Chat struct {
-			Id        int    `json:"id"`
-			FirstName string `json:"first_name"`
-			Username  string `json:"username"`
-			Type      string `json:"type"`
-		} `json:"chat"`
-		Date int    `json:"date"`
-		Text string `json:"text"`
+		Chat       Chat    `json:"chat"`
+		SenderChat Chat    `json:"sender_chat"`
+		Date       int     `json:"date"`
+		Text       string  `json:"text"`
+		Photo      []Photo `json:"photo"`
 	} `json:"result"`
 }
 
+type Chat struct {
+	Id        int    `json:"id"`
+	FirstName string `json:"first_name"`
+	Username  string `json:"username"`
+	Type      string `json:"type"`
+}
 type Message struct {
 	MessageId int `json:"message_id"`
 	From      struct {
@@ -232,6 +236,7 @@ type Message struct {
 	ReplyToMessage *ReplyToMessage `json:"reply_to_message,omitempty"`
 	Photo          []Photo         `json:"photo"`
 }
+
 type Photo struct {
 	FileId       string `json:"file_id"`
 	FileUniqueId string `json:"file_unique_id"`
@@ -239,6 +244,7 @@ type Photo struct {
 	Width        int    `json:"width"`
 	Height       int    `json:"height"`
 }
+
 type ReplyToMessage struct {
 	MessageId int `json:"message_id"`
 	From      struct {
@@ -323,4 +329,8 @@ type InviteLinks struct {
 		IsPrimary          bool `json:"is_primary"`
 		IsRevoked          bool `json:"is_revoked"`
 	} `json:"result"`
+}
+
+type MediaResponse struct {
+	Ok bool `json:"ok"`
 }
