@@ -18,6 +18,7 @@ import (
 )
 
 type Telegram interface {
+	GetChat(chatID string) (Chat, error)
 	SendPoll(poolRequest PollRequest) (PollResponse, error)
 	SendMedia(chatId string, media, message string, parseMode string) (*SendMessageResponse, error)
 	SendSticker(chatId string, media string) (StikerResponse, error)
@@ -50,6 +51,43 @@ func NewTelegramClient(botToken string, ctx context.Context) *TelegramClient {
 		},
 		Ctx: ctx,
 	}
+}
+
+func (t *TelegramClient) GetChat(chatID string) (Chat, error) {
+	url := "https://api.telegram.org/bot" + t.BotToken + "/getChat?chat_id=" + chatID
+	req, err := http.NewRequestWithContext(t.Ctx, http.MethodGet, url, nil)
+	if err != nil {
+		log.Printf("Error creating request: %v", err)
+		return Chat{}, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := t.HttpClient.Do(req)
+	if err != nil {
+		log.Printf("Error sending request: %v", err)
+		return Chat{}, err
+	}
+
+	defer resp.Body.Close()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading response body: %v", err)
+		return Chat{}, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("API request failed with status code: %d body %v", resp.StatusCode, string(bodyBytes))
+		return Chat{}, err
+	}
+
+	var chat Chat
+	err = json.Unmarshal(bodyBytes, &chat)
+	if err != nil {
+		log.Printf("Error unmarshalling response: %v", err)
+		return Chat{}, err
+	}
+
+	return chat, nil
 }
 
 func (t *TelegramClient) SendMessage(message MessageRequest) (SendMessageResponse, error) {
