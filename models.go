@@ -340,17 +340,17 @@ type GetChatResponse struct {
 	GetChat GetChat `json:"result"`
 }
 type GetChat struct {
-	Id                int64     `json:"id"`
-	Title             string    `json:"title"`
-	Username          string    `json:"username"`
-	Type              string    `json:"type"`
-	ActiveUsernames   []string  `json:"active_usernames"`
-	Description       string    `json:"description"`
-	InviteLink        string    `json:"invite_link"`
-	HasVisibleHistory bool      `json:"has_visible_history"`
-	Photo             ChatPhoto `json:"photo"`
-	MaxReactionCount  int       `json:"max_reaction_count"`
-	AccentColorId     int       `json:"accent_color_id"`
+	Id                int64      `json:"id"`
+	Title             string     `json:"title"`
+	Username          string     `json:"username"`
+	Type              string     `json:"type"`
+	ActiveUsernames   []string   `json:"active_usernames"`
+	Description       string     `json:"description"`
+	InviteLink        string     `json:"invite_link"`
+	HasVisibleHistory bool       `json:"has_visible_history"`
+	Photo             *ChatPhoto `json:"photo"`
+	MaxReactionCount  int        `json:"max_reaction_count"`
+	AccentColorId     int        `json:"accent_color_id"`
 }
 
 type ChatPhoto struct {
