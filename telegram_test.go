@@ -124,11 +124,11 @@ var telegramClient *TelegramClient
 //}
 
 func TestTelegramClient_GetChat(t *testing.T) {
-	telegramClient = NewTelegramClient("", context.Background())
+	telegramClient = NewTelegramClient("6860565298:AAGbDhDD3PdFqGrXrKNfo56lDp417BjhRnM", context.Background())
 	if telegramClient == nil {
 		t.Error("Telegram client is nil")
 	}
-	chat, err := telegramClient.GetChat("@")
+	chat, err := telegramClient.GetChat("@kaz_goal")
 	if err != nil {
 		t.Error(err)
 	}
