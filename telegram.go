@@ -230,7 +230,7 @@ func (t *TelegramClient) SendMedia(chatId string, media, message, parseMode stri
 		return response, err
 	}
 
-	writer.WriteField("caption", message)
+	writer.WriteField("text", message)
 	if len(parseMode) <= 0 {
 		writer.WriteField("parse_mode", "MarkdownV2")
 	}
