@@ -2,7 +2,11 @@ package teledau
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"testing"
 )
 
@@ -72,7 +76,7 @@ var telegramClient *TelegramClient
 // }
 //
 //	func TestTelegramClient_SendSticker(t *testing.T) {
-//		telegramClient = NewTelegramClient("6699186697:-l5ZcqEBxAvf40sSiGCzpk", context.Background())
+//		telegramClient = NewTelegramClient(":-l5ZcqEBxAvf40sSiGCzpk", context.Background())
 //		if telegramClient == nil {
 //			t.Error("Telegram client is nil")
 //		}
@@ -88,40 +92,40 @@ var telegramClient *TelegramClient
 //			t.Error(err)
 //		}
 //	}
-//func TestTelegramClient_SendMedia(t *testing.T) {
-//	telegramClient = NewTelegramClient(":", context.Background())
-//	if telegramClient == nil {
-//		t.Error("Telegram client is nil")
-//	}
-//	//read file 1_1.webp and convert to base64 string
-//	media, err := getImageBase64FromURL("https://pbs.twimg.com/media/GQ0qcymXsAAbLcU?format=jpg&name=small")
-//
-//	resp, err := telegramClient.SendMedia("@", media, "*Test message* \n_test_", "MarkdownV2")
-//	if err != nil {
-//		t.Error(err)
-//	}
-//	log.Printf("%v", resp.Result.MessageId)
-//}
-//
-//func getImageBase64FromURL(url string) (string, error) {
-//	resp, err := http.Get(url)
-//	if err != nil {
-//		return "", err
-//	}
-//	defer resp.Body.Close()
-//
-//	if resp.StatusCode != http.StatusOK {
-//		return "", fmt.Errorf("failed to fetch image: %s", resp.Status)
-//	}
-//
-//	imageBytes, err := io.ReadAll(resp.Body)
-//	if err != nil {
-//		return "", err
-//	}
-//
-//	base64Image := base64.StdEncoding.EncodeToString(imageBytes)
-//	return base64Image, nil
-//}
+func TestTelegramClient_SendMedia(t *testing.T) {
+	telegramClient = NewTelegramClient("", context.Background())
+	if telegramClient == nil {
+		t.Error("Telegram client is nil")
+	}
+	//read file 1_1.webp and convert to base64 string
+	media, err := getImageBase64FromURL("https://pbs.twimg.com/media/GQ0qcymXsAAbLcU?format=jpg&name=small")
+
+	resp, err := telegramClient.SendMedia("@kaz_goal", media, "[Click here to visit Example.com](https://www.example.com)", "Markdown")
+	if err != nil {
+		t.Error(err)
+	}
+	log.Printf("%v", resp.Result.MessageId)
+}
+
+func getImageBase64FromURL(url string) (string, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to fetch image: %s", resp.Status)
+	}
+
+	imageBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	base64Image := base64.StdEncoding.EncodeToString(imageBytes)
+	return base64Image, nil
+}
 
 func TestTelegramClient_GetChat(t *testing.T) {
 	telegramClient = NewTelegramClient("", context.Background())
