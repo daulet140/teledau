@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "result": {
+    "id": -1002226943889,
+    "title": "\u0413\u041e\u041b \u049a\u0430\u0437\u0430\u049b\u0441\u0442\u0430\u043d|GOAL",
+    "username": "kaz_goal",
+    "type": "channel",
+    "active_usernames": [
+      "kaz_goal"
+    ],
+    "description": "Test",
+    "invite_link": "https://t.me/+-Gbr5YNuurEzOGIy",
+    "has_visible_history": true,
+    "photo": {
+      "small_file_id": "AQADAgAD6d4xGyBz2UsACAIAA294nqYW____Ftp7HG5DuKk1BA",
+      "small_file_unique_id": "AQAD6d4xGyBz2UsAAQ",
+      "big_file_id": "AQADAgAD6d4xGyBz2UsACAMAA294nqYW____Ftp7HG5DuKk1BA",
+      "big_file_unique_id": "AQAD6d4xGyBz2UsB"
+    },
+    "max_reaction_count": 11,
+    "accent_color_id": 2
+  }
+}
