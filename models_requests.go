@@ -17,6 +17,15 @@ type EditMessageRequest struct {
 	ReplyMarkup           interface{} `json:"reply_markup,omitempty"`
 	Photo                 []Photo     `json:"photo,omitempty"`
 }
+type EditCaptionRequest struct {
+	MessageId             int         `json:"message_id,omitempty"`
+	ChatId                string      `json:"chat_id,omitempty"`
+	Text                  string      `json:"caption,omitempty"`
+	ParseMode             string      `json:"parse_mode,omitempty"`
+	DisableWebPagePreview bool        `json:"disable_web_page_preview,omitempty"`
+	ReplyMarkup           interface{} `json:"reply_markup,omitempty"`
+	Photo                 []Photo     `json:"photo,omitempty"`
+}
 
 type InlineKeyboardMarkup struct {
 	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`

@@ -24,7 +24,7 @@ type Telegram interface {
 	SendSticker(chatId string, media string) (StikerResponse, error)
 	SendMessage(message MessageRequest) (SendMessageResponse, error)
 	EditMessage(message EditMessageRequest) (SendMessageResponse, error)
-	EditCaption(message EditMessageRequest) (SendMessageResponse, error)
+	EditCaption(message EditCaptionRequest) (SendMessageResponse, error)
 	GetFilePath(fileID string) (string, error)
 	DownloadByte(filePath string) ([]byte, error)
 	DownloadFile(fileName, filePath string) error
@@ -177,7 +177,7 @@ func (t *TelegramClient) EditMessage(message EditMessageRequest) (SendMessageRes
 
 	return createdApplicant, nil
 }
-func (t *TelegramClient) EditCaption(message EditMessageRequest) (SendMessageResponse, error) {
+func (t *TelegramClient) EditCaption(message EditCaptionRequest) (SendMessageResponse, error) {
 	url := "https://api.telegram.org/bot" + t.BotToken + "/editMessageCaption"
 
 	messageData, err := json.Marshal(message)
