@@ -24,6 +24,7 @@ type Telegram interface {
 	SendSticker(chatId string, media string) (StikerResponse, error)
 	SendMessage(message MessageRequest) (SendMessageResponse, error)
 	EditMessage(message EditMessageRequest) (SendMessageResponse, error)
+	EditCaption(message EditMessageRequest) (SendMessageResponse, error)
 	GetFilePath(fileID string) (string, error)
 	DownloadByte(filePath string) ([]byte, error)
 	DownloadFile(fileName, filePath string) error
@@ -136,6 +137,48 @@ func (t *TelegramClient) SendMessage(message MessageRequest) (SendMessageRespons
 }
 func (t *TelegramClient) EditMessage(message EditMessageRequest) (SendMessageResponse, error) {
 	url := "https://api.telegram.org/bot" + t.BotToken + "/editMessageText"
+
+	messageData, err := json.Marshal(message)
+	if err != nil {
+		log.Printf("Error marshalling message: %v", err)
+		return SendMessageResponse{}, err
+	}
+
+	req, err := http.NewRequestWithContext(t.Ctx, http.MethodPost, url, bytes.NewBuffer(messageData))
+	if err != nil {
+		log.Printf("Error creating request: %v", err)
+		return SendMessageResponse{}, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := t.HttpClient.Do(req)
+	if err != nil {
+		log.Printf("Error sending request: %v", err)
+		return SendMessageResponse{}, err
+	}
+
+	defer resp.Body.Close()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading response body: %v", err)
+		return SendMessageResponse{}, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("API request failed with status code: %d body %v", resp.StatusCode, string(bodyBytes))
+		return SendMessageResponse{}, fmt.Errorf("API request failed with status code: %d", resp.StatusCode)
+	}
+
+	var createdApplicant SendMessageResponse
+	if err := json.Unmarshal(bodyBytes, &createdApplicant); err != nil {
+		log.Printf("Error unmarshalling response body: %v", err)
+		return SendMessageResponse{}, err
+	}
+
+	return createdApplicant, nil
+}
+func (t *TelegramClient) EditCaption(message EditMessageRequest) (SendMessageResponse, error) {
+	url := "https://api.telegram.org/bot" + t.BotToken + "/editMessageCaption"
 
 	messageData, err := json.Marshal(message)
 	if err != nil {
