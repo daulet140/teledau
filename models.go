@@ -165,10 +165,17 @@ type Post struct {
 }
 
 type MediaGroup struct {
-	Type      string `json:"type"`
-	Media     string `json:"media"`
-	Caption   string `json:"caption,omitempty"`
-	ParseMode string `json:"parse_mode,omitempty"`
+	Type            string            `json:"type"`
+	Media           string            `json:"media"`
+	Caption         string            `json:"caption,omitempty"`
+	CaptionEntities []CaptionEntities `json:"caption_entities,omitempty"`
+	ParseMode       string            `json:"parse_mode,omitempty"`
+}
+
+type CaptionEntities struct {
+	Offset int    `json:"offset"`
+	Length int    `json:"length"`
+	Type   string `json:"type"`
 }
 
 type PostRequest struct {

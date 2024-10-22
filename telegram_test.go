@@ -106,7 +106,22 @@ func TestTelegramClient_SendMedia(t *testing.T) {
 	}
 	log.Printf("%v", resp.Result.MessageId)
 }
+func TestTelegramClient_SendMediaGroup(t *testing.T) {
+	telegramClient = NewTelegramClient("7364006607:AAGK1OQCqe-tmwQnJ-DxsLGcY9eshyIYwI8", context.Background())
+	media, err := getImageBase64FromURL("https://pbs.twimg.com/media/GQ0qcymXsAAbLcU?format=jpg&name=small")
 
+	if err != nil {
+		t.Error(err)
+	}
+	var mediaGroup []string
+	mediaGroup = append(mediaGroup, media)
+	mediaGroup = append(mediaGroup, media)
+	resp, err := telegramClient.SendMediaGroup("@kaz_goal", mediaGroup, "[Click here to visit Example.com](https://www.example.com)", "Markdown")
+	if err != nil {
+		t.Error(err)
+	}
+	log.Printf("%v", resp.Result.MessageId)
+}
 func getImageBase64FromURL(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {

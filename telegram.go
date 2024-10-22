@@ -20,7 +20,8 @@ import (
 type Telegram interface {
 	GetChat(chatID string) (GetChatResponse, error)
 	SendPoll(poolRequest PollRequest) (PollResponse, error)
-	SendMedia(chatId string, media, message string, parseMode string) (*SendMessageResponse, error)
+	SendMedia(chatId, media, message string, parseMode string) (*SendMessageResponse, error)
+	SendMediaGroups(chatId string, media []string, message, parseMode string) (*SendMessageResponse, error)
 	SendSticker(chatId string, media string) (StikerResponse, error)
 	SendMessage(message MessageRequest) (SendMessageResponse, error)
 	EditMessage(message EditMessageRequest) (SendMessageResponse, error)
@@ -295,13 +296,6 @@ func (t *TelegramClient) SendMedia(chatId string, media, message, parseMode stri
 	}
 	defer file.Close()
 
-	// Create a new HTTP request with the file
-	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.telegram.org/bot%s/sendPhoto?chat_id=%s", t.BotToken, chatId), nil)
-	if err != nil {
-		fmt.Println("Error creating HTTP request:", err)
-		return response, err
-	}
-
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -326,6 +320,12 @@ func (t *TelegramClient) SendMedia(chatId string, media, message, parseMode stri
 	// Close the multipart writer
 	writer.Close()
 
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.telegram.org/bot%s/sendPhoto?chat_id=%s", t.BotToken, chatId), nil)
+	if err != nil {
+		fmt.Println("Error creating HTTP request:", err)
+		return response, err
+	}
+
 	// Set the request body
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.Body = ioutil.NopCloser(body)
@@ -349,6 +349,130 @@ func (t *TelegramClient) SendMedia(chatId string, media, message, parseMode stri
 	return response, nil
 }
 
+func (t *TelegramClient) SendMediaGroup(chatId string, media []string, message, parseMode string) (*SendMessageResponse, error) {
+	prefix := time.Now().UnixMilli()
+	response := new(SendMessageResponse)
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	writer.WriteField("chat_id", chatId)
+	var mediaGgroup []MediaGroup
+
+	for i, s := range media {
+		imgData, err := base64.StdEncoding.DecodeString(s)
+
+		if err != nil {
+			fmt.Println("Error decoding base64 string:", err)
+			return response, err
+		}
+
+		tempFile, err := ioutil.TempFile("", fmt.Sprintf("image_%d_%d*.jpeg", prefix, i))
+		if err != nil {
+			fmt.Println("Error creating temporary file:", err)
+			return response, err
+		}
+
+		defer os.Remove(tempFile.Name()) // Clean up temporary file
+
+		if _, err := tempFile.Write(imgData); err != nil {
+			fmt.Println("Error writing image data to file:", err)
+			return response, err
+		}
+
+		if err := tempFile.Close(); err != nil {
+			fmt.Println("Error closing temporary file:", err)
+			return response, err
+		}
+
+		file, err := os.Open(tempFile.Name())
+		if err != nil {
+			fmt.Println("Error opening temporary file:", err)
+			return response, err
+		}
+
+		defer file.Close()
+
+		part, err := writer.CreateFormFile(fmt.Sprintf("photo%d", i), fmt.Sprintf("image_%d_%d*.jpeg", prefix, i))
+		if err != nil {
+			fmt.Println("Error creating form file:", err)
+			return response, err
+		}
+
+		if _, err := io.Copy(part, file); err != nil {
+			fmt.Println("Error copying file data:", err)
+			return response, err
+		}
+
+		mediaG := MediaGroup{Type: "photo", Media: fmt.Sprintf("attach://photo%d", i)}
+		if i == 0 {
+			mediaG.Caption = message
+
+			if len(parseMode) <= 0 {
+				err := writer.WriteField("parse_mode", "MarkdownV2")
+				if err != nil {
+					return nil, err
+				}
+				mediaG.ParseMode = "MarkdownV2"
+			} else {
+				err := writer.WriteField("parse_mode", parseMode)
+				if err != nil {
+					return nil, err
+				}
+				mediaG.ParseMode = parseMode
+			}
+		}
+
+		mediaGgroup = append(mediaGgroup, mediaG)
+
+	}
+	mediaGgroupBytes, err := json.Marshal(mediaGgroup)
+	if err != nil {
+		fmt.Println("Error marshalling mediaGgroup:", err)
+		return response, err
+	}
+
+	err = writer.WriteField("media", string(mediaGgroupBytes))
+	if err != nil {
+		return nil, err
+	}
+
+	err = writer.WriteField("caption", message)
+	if err != nil {
+		return nil, err
+	}
+
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.telegram.org/bot%s/sendMediaGroup?chat_id=%s", t.BotToken, chatId), nil)
+	if err != nil {
+		fmt.Println("Error creating HTTP request:", err)
+		return response, err
+	}
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Body = ioutil.NopCloser(body)
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending HTTP request:", err)
+
+		return response, err
+	}
+	defer resp.Body.Close()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading response body: %v", err)
+
+		return response, err
+	}
+
+	json.Unmarshal(bodyBytes, &response)
+
+	return response, nil
+}
 func (t *TelegramClient) SendSticker(chatId string, media string) (StikerResponse, error) {
 	url := "https://api.telegram.org/bot" + t.BotToken + "/sendSticker"
 	filePath := "/path/to/decoded/sticker.webp"
@@ -514,6 +638,7 @@ func (t *TelegramClient) DownloadStrBase64(filePath string) (string, error) {
 
 	return base64String, nil
 }
+
 func (t *TelegramClient) DownloadByte(filePath string) ([]byte, error) {
 	resp, err := http.Get(fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", t.BotToken, filePath))
 	if err != nil {
