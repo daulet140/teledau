@@ -19,137 +19,23 @@ type PollRequest struct {
 }
 
 type StikerResponse struct {
-	Ok     bool `json:"ok"`
-	Result struct {
-		MessageId  int64 `json:"message_id"`
-		SenderChat struct {
-			Id       int64  `json:"id"`
-			Title    string `json:"title"`
-			Username string `json:"username"`
-			Type     string `json:"type"`
-		} `json:"sender_chat"`
-		Chat struct {
-			Id       int64  `json:"id"`
-			Title    string `json:"title"`
-			Username string `json:"username"`
-			Type     string `json:"type"`
-		} `json:"chat"`
-		Date    int `json:"date"`
-		Sticker struct {
-			Width      int    `json:"width"`
-			Height     int    `json:"height"`
-			IsAnimated bool   `json:"is_animated"`
-			IsVideo    bool   `json:"is_video"`
-			Type       string `json:"type"`
-			Thumbnail  struct {
-				FileId       string `json:"file_id"`
-				FileUniqueId string `json:"file_unique_id"`
-				FileSize     int    `json:"file_size"`
-				Width        int    `json:"width"`
-				Height       int    `json:"height"`
-			} `json:"thumbnail"`
-			Thumb struct {
-				FileId       string `json:"file_id"`
-				FileUniqueId string `json:"file_unique_id"`
-				FileSize     int    `json:"file_size"`
-				Width        int    `json:"width"`
-				Height       int    `json:"height"`
-			} `json:"thumb"`
-			FileId       string `json:"file_id"`
-			FileUniqueId string `json:"file_unique_id"`
-			FileSize     int    `json:"file_size"`
-		} `json:"sticker"`
-	} `json:"result"`
+	Ok     bool   `json:"ok"`
+	Result Result `json:"result"`
 }
 
 type PostResponse struct {
-	Ok     bool `json:"ok"`
-	Result struct {
-		Chat struct {
-			Id       int64  `json:"id"`
-			Title    string `json:"title"`
-			Type     string `json:"type"`
-			Username string `json:"username"`
-		} `json:"chat"`
-		Date     int64 `json:"date"`
-		Entities []struct {
-			Length int    `json:"length"`
-			Offset int    `json:"offset"`
-			Type   string `json:"type"`
-		} `json:"entities"`
-		MessageId  int64 `json:"message_id"`
-		SenderChat struct {
-			Id       int64  `json:"id"`
-			Title    string `json:"title"`
-			Type     string `json:"type"`
-			Username string `json:"username"`
-		} `json:"sender_chat"`
-		Text string `json:"text"`
-	} `json:"result"`
+	Ok     bool   `json:"ok"`
+	Result Result `json:"result"`
 }
 
 type MediaPostResponse struct {
-	Ok     bool `json:"ok"`
-	Result []struct {
-		Chat struct {
-			Id       int64  `json:"id"`
-			Title    string `json:"title"`
-			Type     string `json:"type"`
-			Username string `json:"username"`
-		} `json:"chat"`
-		Date     int64 `json:"date"`
-		Entities []struct {
-			Length int    `json:"length"`
-			Offset int    `json:"offset"`
-			Type   string `json:"type"`
-		} `json:"entities"`
-		MessageId  int64 `json:"message_id"`
-		SenderChat struct {
-			Id       int64  `json:"id"`
-			Title    string `json:"title"`
-			Type     string `json:"type"`
-			Username string `json:"username"`
-		} `json:"sender_chat"`
-		Text string `json:"text"`
-	} `json:"result"`
+	Ok     bool     `json:"ok"`
+	Result []Result `json:"result"`
 }
 
 type PollResponse struct {
-	Ok     bool `json:"ok"`
-	Result struct {
-		MessageId  int `json:"message_id"`
-		SenderChat struct {
-			Id       int64  `json:"id"`
-			Title    string `json:"title"`
-			Username string `json:"username"`
-			Type     string `json:"type"`
-		} `json:"sender_chat"`
-		Chat struct {
-			Id       int64  `json:"id"`
-			Title    string `json:"title"`
-			Username string `json:"username"`
-			Type     string `json:"type"`
-		} `json:"chat"`
-		Date int `json:"date"`
-		Poll struct {
-			Id       string `json:"id"`
-			Question string `json:"question"`
-			Options  []struct {
-				Text       string `json:"text"`
-				VoterCount int    `json:"voter_count"`
-			} `json:"options"`
-			TotalVoterCount       int           `json:"total_voter_count"`
-			OpenPeriod            int           `json:"open_period"`
-			CloseDate             int           `json:"close_date"`
-			IsClosed              bool          `json:"is_closed"`
-			IsAnonymous           bool          `json:"is_anonymous"`
-			Type                  string        `json:"type"`
-			AllowsMultipleAnswers bool          `json:"allows_multiple_answers"`
-			CorrectOptionId       int           `json:"correct_option_id"`
-			Explanation           string        `json:"explanation"`
-			ExplanationEntities   []interface{} `json:"explanation_entities"`
-		} `json:"poll"`
-	} `json:"result"`
+	Ok     bool   `json:"ok"`
+	Result Result `json:"result"`
 }
 
 type MessageId struct {
@@ -200,21 +86,99 @@ type Update struct {
 }
 
 type SendMessageResponse struct {
-	Ok     bool `json:"ok"`
-	Result struct {
-		MessageId int `json:"message_id"`
-		From      struct {
-			Id        int64  `json:"id"`
-			IsBot     bool   `json:"is_bot"`
-			FirstName string `json:"first_name"`
-			Username  string `json:"username"`
-		} `json:"from"`
-		Chat       Chat    `json:"chat"`
-		SenderChat Chat    `json:"sender_chat"`
-		Date       int     `json:"date"`
-		Text       string  `json:"text"`
-		Photo      []Photo `json:"photo"`
-	} `json:"result"`
+	Ok     bool   `json:"ok"`
+	Result Result `json:"result"`
+}
+
+type Result struct {
+	MessageId          int        `json:"message_id"`
+	From               From       `json:"from"`
+	Chat               Chat       `json:"chat"`
+	SenderChat         Chat       `json:"sender_chat"`
+	Date               int        `json:"date"`
+	Text               string     `json:"text"`
+	Photo              []Photo    `json:"photo"`
+	Sticker            Sticker    `json:"sticker"`
+	Entities           []Entities `json:"entities"`
+	Poll               Poll       `json:"poll"`
+	InviteLink         string     `json:"invite_link"`
+	Name               string     `json:"name"`
+	Creator            Creator    `json:"creator"`
+	CreatesJoinRequest bool       `json:"creates_join_request"`
+	IsPrimary          bool       `json:"is_primary"`
+	IsRevoked          bool       `json:"is_revoked"`
+}
+
+type Creator struct {
+	Id        int64  `json:"id"`
+	IsBot     bool   `json:"is_bot"`
+	FirstName string `json:"first_name"`
+	Username  string `json:"username"`
+}
+
+type Poll struct {
+	Id                    string        `json:"id"`
+	Question              string        `json:"question"`
+	Options               []Options     `json:"options"`
+	TotalVoterCount       int           `json:"total_voter_count"`
+	OpenPeriod            int           `json:"open_period"`
+	CloseDate             int           `json:"close_date"`
+	IsClosed              bool          `json:"is_closed"`
+	IsAnonymous           bool          `json:"is_anonymous"`
+	Type                  string        `json:"type"`
+	AllowsMultipleAnswers bool          `json:"allows_multiple_answers"`
+	CorrectOptionId       int           `json:"correct_option_id"`
+	Explanation           string        `json:"explanation"`
+	ExplanationEntities   []interface{} `json:"explanation_entities"`
+}
+
+type Options struct {
+	Text       string `json:"text"`
+	VoterCount int    `json:"voter_count"`
+}
+
+type Entities struct {
+	Length int    `json:"length"`
+	Offset int    `json:"offset"`
+	Type   string `json:"type"`
+}
+
+type From struct {
+	Id           int64  `json:"id"`
+	IsBot        bool   `json:"is_bot"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name,omitempty"`
+	Username     string `json:"username"`
+	LanguageCode string `json:"language_code"`
+}
+
+type Thumbnail struct {
+	FileId       string `json:"file_id"`
+	FileUniqueId string `json:"file_unique_id"`
+	FileSize     int    `json:"file_size"`
+	Width        int    `json:"width"`
+	Height       int    `json:"height"`
+}
+
+type Thumb struct {
+	FileId       string `json:"file_id"`
+	FileUniqueId string `json:"file_unique_id"`
+	FileSize     int    `json:"file_size"`
+	Width        int    `json:"width"`
+	Height       int    `json:"height"`
+}
+
+type Sticker struct {
+	Width        int       `json:"width"`
+	Height       int       `json:"height"`
+	IsAnimated   bool      `json:"is_animated"`
+	IsVideo      bool      `json:"is_video"`
+	Type         string    `json:"type"`
+	Thumbnail    Thumbnail `json:"thumbnail"`
+	Thumb        Thumb     `json:"thumb"`
+	FileId       string    `json:"file_id"`
+	FileUniqueId string    `json:"file_unique_id"`
+	FileSize     int       `json:"file_size"`
 }
 
 type Chat struct {
@@ -223,21 +187,11 @@ type Chat struct {
 	Username  string `json:"username"`
 	Type      string `json:"type"`
 }
+
 type Message struct {
-	MessageId int `json:"message_id"`
-	From      struct {
-		Id           int    `json:"id"`
-		IsBot        bool   `json:"is_bot"`
-		FirstName    string `json:"first_name"`
-		Username     string `json:"username"`
-		LanguageCode string `json:"language_code"`
-	} `json:"from"`
-	Chat struct {
-		Id        int64  `json:"id"`
-		FirstName string `json:"first_name"`
-		Username  string `json:"username"`
-		Type      string `json:"type"`
-	} `json:"chat"`
+	MessageId      int             `json:"message_id"`
+	From           From            `json:"from"`
+	Chat           Chat            `json:"chat"`
 	Date           int             `json:"date"`
 	Text           string          `json:"text"`
 	ReplyToMessage *ReplyToMessage `json:"reply_to_message,omitempty"`
@@ -253,89 +207,39 @@ type Photo struct {
 }
 
 type ReplyToMessage struct {
-	MessageId int `json:"message_id"`
-	From      struct {
-		Id           int    `json:"id"`
-		IsBot        bool   `json:"is_bot"`
-		FirstName    string `json:"first_name"`
-		Username     string `json:"username"`
-		LanguageCode string `json:"language_code"`
-	} `json:"from"`
-	Chat struct {
-		Id        int    `json:"id"`
-		FirstName string `json:"first_name"`
-		Username  string `json:"username"`
-		Type      string `json:"type"`
-	} `json:"chat"`
-	Date int    `json:"date"`
-	Text string `json:"text"`
+	MessageId int    `json:"message_id"`
+	From      From   `json:"from"`
+	Chat      Chat   `json:"chat"`
+	Date      int    `json:"date"`
+	Text      string `json:"text"`
 }
 
 type ChatMember struct {
-	Chat struct {
-		Id       int64  `json:"id"`
-		Title    string `json:"title"`
-		Username string `json:"username"`
-		Type     string `json:"type"`
-	} `json:"chat"`
-	From struct {
-		Id        int64  `json:"id"`
-		IsBot     bool   `json:"is_bot"`
-		FirstName string `json:"first_name,"`
-		LastName  string `json:"last_name,omitempty"`
-		Username  string `json:"username"`
-	} `json:"from"`
-	Date          int `json:"date"`
-	OldChatMember struct {
-		User struct {
-			Id        int64  `json:"id"`
-			IsBot     bool   `json:"is_bot"`
-			FirstName string `json:"first_name"`
-			LastName  string `json:"last_name,omitempty"`
-			Username  string `json:"username"`
-		} `json:"user"`
-		Status string `json:"status"`
-	} `json:"old_chat_member"`
-	NewChatMember struct {
-		User struct {
-			Id        int64  `json:"id"`
-			IsBot     bool   `json:"is_bot"`
-			FirstName string `json:"first_name"`
-			LastName  string `json:"last_name,omitempty"`
-			Username  string `json:"username"`
-		} `json:"user"`
-		Status string `json:"status"`
-	} `json:"new_chat_member"`
-	InviteLink struct {
-		InviteLink string `json:"invite_link"`
-		Name       string `json:"name"`
-		Creator    struct {
-			Id        int64  `json:"id"`
-			IsBot     bool   `json:"is_bot"`
-			FirstName string `json:"first_name"`
-			Username  string `json:"username"`
-		} `json:"creator"`
-		CreatesJoinRequest bool `json:"creates_join_request"`
-		IsPrimary          bool `json:"is_primary"`
-		IsRevoked          bool `json:"is_revoked"`
-	} `json:"invite_link,omitempty"`
+	Chat          Chat          `json:"chat"`
+	From          From          `json:"from"`
+	Date          int           `json:"date"`
+	OldChatMember NewChatMember `json:"old_chat_member"`
+	NewChatMember NewChatMember `json:"new_chat_member"`
+	InviteLink    InviteLink    `json:"invite_link,omitempty"`
+}
+
+type NewChatMember struct {
+	User   From   `json:"user"`
+	Status string `json:"status"`
+}
+
+type InviteLink struct {
+	InviteLink         string  `json:"invite_link"`
+	Name               string  `json:"name"`
+	Creator            Creator `json:"creator"`
+	CreatesJoinRequest bool    `json:"creates_join_request"`
+	IsPrimary          bool    `json:"is_primary"`
+	IsRevoked          bool    `json:"is_revoked"`
 }
 
 type InviteLinks struct {
-	Ok     bool `json:"ok"`
-	Result struct {
-		InviteLink string `json:"invite_link"`
-		Name       string `json:"name"`
-		Creator    struct {
-			Id        int64  `json:"id"`
-			IsBot     bool   `json:"is_bot"`
-			FirstName string `json:"first_name"`
-			Username  string `json:"username"`
-		} `json:"creator"`
-		CreatesJoinRequest bool `json:"creates_join_request"`
-		IsPrimary          bool `json:"is_primary"`
-		IsRevoked          bool `json:"is_revoked"`
-	} `json:"result"`
+	Ok     bool   `json:"ok"`
+	Result Result `json:"result"`
 }
 
 type MediaResponse struct {
@@ -365,4 +269,10 @@ type ChatPhoto struct {
 	SmallFileUniqueId string `json:"small_file_unique_id"`
 	BigFileId         string `json:"big_file_id"`
 	BigFileUniqueId   string `json:"big_file_unique_id"`
+}
+
+type FileResponse struct {
+	Result struct {
+		FilePath string `json:"file_path"`
+	} `json:"result"`
 }
